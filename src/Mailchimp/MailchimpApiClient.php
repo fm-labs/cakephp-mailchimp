@@ -3,6 +3,7 @@
 namespace Mailchimp\Mailchimp;
 
 use Cake\Core\InstanceConfigTrait;
+use Cake\Log\Log;
 
 /**
  * MailchimpApiClient class
@@ -30,7 +31,7 @@ class MailchimpApiClient {
     protected $_defaultConfig = [
         'api_key' => null,
         'throw_exceptions' => true,
-        'list_id' => null // @deprecated
+        'list_id' => null
     ];
 
     /**
@@ -62,6 +63,7 @@ class MailchimpApiClient {
         $return = call_user_func_array([$this->_api, $action], $params);
 
         if (in_array($action, ['get', 'post', 'put', 'patch', 'delete'])) {
+            Log::info("MailchimpApiClient: CALL $action: " . json_encode($params), ['mailchimp']);
             return $this->_return($return);
         }
 
@@ -73,24 +75,28 @@ class MailchimpApiClient {
         return $this->get('lists');
     }
 
-    public function getListSignupForms($listId)
+    public function getSignupForms($listId = null)
     {
+        $listId = $this->_listId($listId);
         return $this->get('lists/' . $listId . '/signup-forms');
     }
 
-    public function getListMembers($listId)
+    public function getMembers($listId = null)
     {
+        $listId = $this->_listId($listId);
         return $this->get('lists/' . $listId . '/members');
     }
 
-    public function getListMemberByEmail($listId, $email)
+    public function getMember($email, $listId = null)
     {
+        $listId = $this->_listId($listId);
         $hash = $this->_api->subscriberHash($email);
         return $this->get('lists/' . $listId . '/members/' . $hash);
     }
 
-    public function subscribeListMemberByEmail($listId, $email, array $data = [])
+    public function subscribeMember($email, array $data = [], $listId = null)
     {
+        $listId = $this->_listId($listId);
         $data = array_merge(
             ['status' => self::MEMBER_STATUS_SUBSCRIBED],
             $data,
@@ -105,61 +111,23 @@ class MailchimpApiClient {
         return $this->put('lists/' . $listId . '/members/' . $hash, $data);
     }
 
-    public function unsubscribeListMemberByEmail($listId, $email)
+    public function unsubscribeMember($email, $listId = null)
     {
+        $listId = $this->_listId($listId);
         $hash = $this->_api->subscriberHash($email);
-        return $this->patch('lists/' . $listId . '/members/' . $hash, ['status' => 'unsubscribed']);
+        $data = ['status' => self::MEMBER_STATUS_UNSUBSCRIBED];
+        return $this->patch('lists/' . $listId . '/members/' . $hash, $data);
     }
 
-    public function deleteListMemberByEmail($listId, $email)
+    public function deleteMember($email, $listId = null)
     {
         $hash = $this->_api->subscriberHash($email);
         return $this->delete('lists/' . $listId . '/members/' . $hash);
     }
 
-    /**
-     * @deprecated Use getListMembers() instead
-     */
-    public function getSubscribers($listId = null)
+    public function makeRequest()
     {
-        $listId = $this->_listId($listId);
-        return $this->getListMembers($listId);
-    }
 
-    /**
-     * @deprecated Use getListMemberByEmail() instead
-     */
-    public function getSubscriber($email, $listId = null)
-    {
-        $listId = $this->_listId($listId);
-        return $this->getListMemberByEmail($listId, $email);
-    }
-
-    /**
-     * @deprecated Use subscribeListMemberByEmail() instead
-     */
-    public function addSubscriber($email, $listId = null, array $data = [])
-    {
-        $listId = $this->_listId($listId);
-        return $this->subscribeListMemberByEmail($listId, $email, $data);
-    }
-
-    /**
-     * @deprecated Use unsubscribeListMemberByEmail() instead
-     */
-    public function unsubscribeSubscriber($email, $listId = null)
-    {
-        $listId = $this->_listId($listId);
-        return $this->unsubscribeListMemberByEmail($listId, $email);
-    }
-
-    /**
-     * @deprecated Use deleteListMemberByEmail() instead
-     */
-    public function removeSubscriber($email, $listId = null)
-    {
-        $listId = $this->_listId($listId);
-        return $this->deleteListMemberByEmail($listId, $email);
     }
 
     /**
