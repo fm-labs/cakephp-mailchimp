@@ -4,7 +4,18 @@ namespace Mailchimp\Mailchimp;
 
 use Cake\Core\InstanceConfigTrait;
 
-class MailchimpClient {
+/**
+ * MailchimpApiClient class
+ *
+ * @link http://developer.mailchimp.com/documentation/mailchimp/
+ *
+ * @method get($method, $args = array(), $timeout = null)
+ * @method post($method, $args = array(), $timeout = null)
+ * @method put($method, $args = array(), $timeout = null)
+ * @method patch($method, $args = array(), $timeout = null)
+ * @method delete($method, $args = array(), $timeout = null)
+ */
+class MailchimpApiClient {
 
     use InstanceConfigTrait;
 
@@ -18,8 +29,8 @@ class MailchimpClient {
      */
     protected $_defaultConfig = [
         'api_key' => null,
-        'list_id' => null,
-        'throw_exceptions' => true
+        'throw_exceptions' => true,
+        'list_id' => null // @deprecated
     ];
 
     /**
@@ -47,30 +58,39 @@ class MailchimpClient {
         if (!method_exists($this->_api, $action)) {
             throw new \InvalidArgumentException("Unknown method: ". $action);
         }
-        return $this->_return(call_user_func_array([$this->_api, $action], $params));
+
+        $return = call_user_func_array([$this->_api, $action], $params);
+
+        if (in_array($action, ['get', 'post', 'put', 'patch', 'delete'])) {
+            return $this->_return($return);
+        }
+
+        return $return;
     }
 
     public function getLists()
     {
-        return $this->_return($this->_api->get('lists'));
+        return $this->get('lists');
     }
 
-    public function getSubscribers($listId = null)
+    public function getListSignupForms($listId)
     {
-        $listId = $this->_listId($listId);
-        return $this->_return($this->_api->get('lists/' . $listId . '/members'));
+        return $this->get('lists/' . $listId . '/signup-forms');
     }
 
-    public function getSubscriber($email, $listId = null)
+    public function getListMembers($listId)
     {
-        $listId = $this->_listId($listId);
+        return $this->get('lists/' . $listId . '/members');
+    }
+
+    public function getListMemberByEmail($listId, $email)
+    {
         $hash = $this->_api->subscriberHash($email);
-        return $this->_return($this->_api->get('lists/' . $listId . '/members/' . $hash));
+        return $this->get('lists/' . $listId . '/members/' . $hash);
     }
 
-    public function addSubscriber($email, $listId = null, array $data = [])
+    public function subscribeListMemberByEmail($listId, $email, array $data = [])
     {
-        $listId = $this->_listId($listId);
         $data = array_merge(
             ['status' => self::MEMBER_STATUS_SUBSCRIBED],
             $data,
@@ -82,21 +102,64 @@ class MailchimpClient {
 
         // PUT strategy
         $hash = $this->_api->subscriberHash($email);
-        return $this->_return($this->_api->put('lists/' . $listId . '/members/' . $hash, $data));
+        return $this->put('lists/' . $listId . '/members/' . $hash, $data);
     }
 
+    public function unsubscribeListMemberByEmail($listId, $email)
+    {
+        $hash = $this->_api->subscriberHash($email);
+        return $this->patch('lists/' . $listId . '/members/' . $hash, ['status' => 'unsubscribed']);
+    }
+
+    public function deleteListMemberByEmail($listId, $email)
+    {
+        $hash = $this->_api->subscriberHash($email);
+        return $this->delete('lists/' . $listId . '/members/' . $hash);
+    }
+
+    /**
+     * @deprecated Use getListMembers() instead
+     */
+    public function getSubscribers($listId = null)
+    {
+        $listId = $this->_listId($listId);
+        return $this->getListMembers($listId);
+    }
+
+    /**
+     * @deprecated Use getListMemberByEmail() instead
+     */
+    public function getSubscriber($email, $listId = null)
+    {
+        $listId = $this->_listId($listId);
+        return $this->getListMemberByEmail($listId, $email);
+    }
+
+    /**
+     * @deprecated Use subscribeListMemberByEmail() instead
+     */
+    public function addSubscriber($email, $listId = null, array $data = [])
+    {
+        $listId = $this->_listId($listId);
+        return $this->subscribeListMemberByEmail($listId, $email, $data);
+    }
+
+    /**
+     * @deprecated Use unsubscribeListMemberByEmail() instead
+     */
     public function unsubscribeSubscriber($email, $listId = null)
     {
         $listId = $this->_listId($listId);
-        $hash = $this->_api->subscriberHash($email);
-        return $this->_return($this->_api->patch('lists/' . $listId . '/members/' . $hash, ['status' => 'unsubscribed']));
+        return $this->unsubscribeListMemberByEmail($listId, $email);
     }
 
+    /**
+     * @deprecated Use deleteListMemberByEmail() instead
+     */
     public function removeSubscriber($email, $listId = null)
     {
         $listId = $this->_listId($listId);
-        $hash = $this->_api->subscriberHash($email);
-        return $this->_return($this->_api->delete('lists/' . $listId . '/members/' . $hash));
+        return $this->deleteListMemberByEmail($listId, $email);
     }
 
     /**

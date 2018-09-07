@@ -4,12 +4,12 @@ namespace Mailchimp\Shell;
 
 use Cake\Console\Shell;
 use Cake\Core\Configure;
-use Mailchimp\Mailchimp\MailchimpClient;
+use Mailchimp\Mailchimp\MailchimpApiClient;
 
 class MailchimpShell extends Shell
 {
     /**
-     * @var MailchimpClient
+     * @var MailchimpApiClient
      */
     public $Mailchimp;
 
@@ -22,7 +22,7 @@ class MailchimpShell extends Shell
             if (!$mailchimpConfig) {
                 throw new \RuntimeException('Mailchimp configuration not found');
             }
-            $this->Mailchimp = new MailchimpClient($mailchimpConfig);
+            $this->Mailchimp = new MailchimpApiClient($mailchimpConfig);
         } catch(\Exception $ex) {
             $this->abort($ex->getMessage());
         }
