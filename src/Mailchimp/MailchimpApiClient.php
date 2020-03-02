@@ -15,6 +15,7 @@ use Cake\Log\Log;
  * @method put($method, $args = array(), $timeout = null)
  * @method patch($method, $args = array(), $timeout = null)
  * @method delete($method, $args = array(), $timeout = null)
+ * @method getLastError()
  */
 class MailchimpApiClient {
 
@@ -57,13 +58,14 @@ class MailchimpApiClient {
     public function __call($action, $params)
     {
         if (!method_exists($this->_api, $action)) {
-            throw new \InvalidArgumentException("Unknown method: ". $action);
+            throw new \InvalidArgumentException("Unknown method: " . $action);
         }
 
         $return = call_user_func_array([$this->_api, $action], $params);
 
         if (in_array($action, ['get', 'post', 'put', 'patch', 'delete'])) {
             Log::info("MailchimpApiClient: CALL $action: " . json_encode($params), ['mailchimp']);
+
             return $this->_return($return);
         }
 
@@ -78,19 +80,22 @@ class MailchimpApiClient {
     public function getSignupForms($listId = null)
     {
         $listId = $this->_listId($listId);
+
         return $this->get('lists/' . $listId . '/signup-forms');
     }
 
-    public function getMembers($listId = null)
+    public function getMembers($listId = null, $args = [])
     {
         $listId = $this->_listId($listId);
-        return $this->get('lists/' . $listId . '/members');
+
+        return $this->get('lists/' . $listId . '/members', $args);
     }
 
     public function getMember($email, $listId = null)
     {
         $listId = $this->_listId($listId);
         $hash = $this->_api->subscriberHash($email);
+
         return $this->get('lists/' . $listId . '/members/' . $hash);
     }
 
@@ -108,6 +113,7 @@ class MailchimpApiClient {
 
         // PUT strategy
         $hash = $this->_api->subscriberHash($email);
+
         return $this->put('lists/' . $listId . '/members/' . $hash, $data);
     }
 
@@ -116,19 +122,23 @@ class MailchimpApiClient {
         $listId = $this->_listId($listId);
         $hash = $this->_api->subscriberHash($email);
         $data = ['status' => self::MEMBER_STATUS_UNSUBSCRIBED];
+
         return $this->patch('lists/' . $listId . '/members/' . $hash, $data);
     }
 
     public function deleteMember($email, $listId = null)
     {
         $hash = $this->_api->subscriberHash($email);
+
         return $this->delete('lists/' . $listId . '/members/' . $hash);
     }
 
+    /*
     public function makeRequest()
     {
 
     }
+    */
 
     /**
      * Check the listId we are working on.

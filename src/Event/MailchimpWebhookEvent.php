@@ -40,7 +40,7 @@ class MailchimpWebhookEvent extends Event
 
     /**
      * Returns the datetime when the event was fired from mailchimp
-     * @return string 
+     * @return string
      */
     public function getEventTime()
     {
@@ -109,5 +109,4 @@ class MailchimpWebhookEvent extends Event
     {
         return $this->getListId();
     }
-
 }

@@ -54,7 +54,7 @@ class MailchimpShell extends Shell
             ->addOption('list', [
                 'help' => 'Mailchimp list ID',
                 'required' => false,
-                'default' => '5cd57aa1c7' //@TODO Remove this debug default value
+                'default' => null
             ])
             ->addOption('email', [
                 'help' => 'Subscriber email',
@@ -70,6 +70,16 @@ class MailchimpShell extends Shell
                 'help' => 'Subscriber status',
                 'required' => false,
                 'default' => 'subscribed' //@TODO Remove this debug default value
+            ])
+            ->addOption('limit', [
+                'help' => 'Number of maximum response items',
+                'required' => false,
+                'default' => 10
+            ])
+            ->addOption('offset', [
+                'help' => 'Number of maximum response items',
+                'required' => false,
+                'default' => 0
             ])
             ;
     }
@@ -94,15 +104,22 @@ class MailchimpShell extends Shell
             $this->abort('Please specify a list using the `--list` option');
         }
 
+        $offset = $this->param('offset') ?? 0;
+        $limit = $this->param('limit') ?? 10;
+
         $this->info("Requesting subscribers for list " . $listId);
-        $subscribers = $this->Mailchimp->getSubscribers($listId);
+        $subscribers = $this->Mailchimp->getMembers($listId, [
+            'count' => $limit,
+            'offset' => $offset
+        ]);
         if (!$subscribers || !isset($subscribers['members'])) {
             $this->abort("Failed to fetch subscribers");
         }
 
-        $this->info(sprintf("Found %d subscribers", count($subscribers['members'])));
+        $this->info(sprintf("Found %d of %d subscribers", count($subscribers['members']), $subscribers['total_items']));
         foreach ($subscribers['members'] as $s) {
-            $this->out(sprintf("%s:%s:%s", $s['id'], $s['email_address'], $s['status']));
+            $mergeFields = $s['merge_fields'];
+            $this->out(sprintf("> %s:%s:%s:%s:%s", $s['id'], $s['email_address'], $s['status'], $mergeFields['FNAME'], $mergeFields['LNAME']));
         }
     }
 
