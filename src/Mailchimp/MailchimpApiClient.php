@@ -42,9 +42,9 @@ class MailchimpApiClient {
 
     public function __construct(array $config)
     {
-        $this->config($config);
+        $this->setConfig($config);
 
-        if (!$this->config('api_key')) {
+        if (!$this->getConfig('api_key')) {
             throw new \InvalidArgumentException('MailChimp api requires an api key');
         }
 
@@ -52,7 +52,7 @@ class MailchimpApiClient {
         if (!class_exists($apiClass)) {
             throw new \RuntimeException("MailChimp api class not found: " . $apiClass);
         }
-        $this->_api = new $apiClass($this->config('api_key'));
+        $this->_api = new $apiClass($this->getConfig('api_key'));
     }
 
     public function __call($action, $params)
@@ -153,10 +153,10 @@ class MailchimpApiClient {
     protected function _listId($listId)
     {
         if ($listId === null) {
-            $listId = $this->config('list_id');
+            $listId = $this->getConfig('list_id');
         }
 
-        if ($this->config('throw_exception')) {
+        if ($this->getConfig('throw_exception')) {
             throw new \InvalidArgumentException('Mailchimp list ID not specified');
         }
 
@@ -165,7 +165,7 @@ class MailchimpApiClient {
 
     protected function _return($result)
     {
-        if ($this->config('throw_exceptions') == true) {
+        if ($this->getConfig('throw_exceptions') == true) {
             $lastError = $this->_api->getLastError();
             if ($lastError) {
                 throw new MailchimpException($lastError, $result);
