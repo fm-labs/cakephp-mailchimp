@@ -10,7 +10,7 @@ class WebhookController extends Controller
 {
     public function beforeFilter(Event $event)
     {
-        $this->viewBuilder()->className('Json');
+        $this->viewBuilder()->setClassName('Json');
     }
 
     public function process()
@@ -18,7 +18,7 @@ class WebhookController extends Controller
         $error = null;
 
         try {
-            $event = $this->eventManager()->dispatch(new MailchimpWebhookEvent($this->request->data));
+            $event = $this->getEventManager()->dispatch(new MailchimpWebhookEvent($this->request->getData()));
             $success = true;
         } catch (\Exception $ex) {
             $success = false;
@@ -26,7 +26,7 @@ class WebhookController extends Controller
 
         } finally {
             $request = [
-                'data' => $this->request->data,
+                'data' => $this->request->getData(),
                 'ip' => $this->request->clientIp(),
                 //'input' => $this->request->input(),
             ];
