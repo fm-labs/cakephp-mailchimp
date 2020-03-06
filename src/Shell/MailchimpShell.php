@@ -99,13 +99,13 @@ class MailchimpShell extends Shell
 
     public function subscribers()
     {
-        $listId = $this->param('list');
+        $listId = $this->getParam('list');
         if (!$listId) {
             $this->abort('Please specify a list using the `--list` option');
         }
 
-        $offset = $this->param('offset') ?? 0;
-        $limit = $this->param('limit') ?? 10;
+        $offset = $this->getParam('offset') ?? 0;
+        $limit = $this->getParam('limit') ?? 10;
 
         $this->info("Requesting subscribers for list " . $listId);
         $subscribers = $this->Mailchimp->getMembers($listId, [
@@ -125,8 +125,8 @@ class MailchimpShell extends Shell
 
     public function getSubscriber()
     {
-        $listId = $this->param('list');
-        $email = $this->param('email');
+        $listId = $this->getParam('list');
+        $email = $this->getParam('email');
         if (!$listId || !$email) {
             $this->abort("ListId or subscriber email missing");
         }
@@ -145,8 +145,8 @@ class MailchimpShell extends Shell
 
     public function subscribe()
     {
-        $listId = $this->param('list');
-        $email = $this->param('email');
+        $listId = $this->getParam('list');
+        $email = $this->getParam('email');
         if (!$listId || !$email) {
             $this->abort("ListId or subscriber email missing");
         }
@@ -155,7 +155,7 @@ class MailchimpShell extends Shell
         try {
             $result = $this->Mailchimp->addSubscriber($email, $listId, [
                 'merge_fields' => [
-                    'FNAME' => $this->param('name')
+                    'FNAME' => $this->getParam('name')
                 ]
             ]);
             debug($result);
@@ -169,8 +169,8 @@ class MailchimpShell extends Shell
 
     public function unsubscribe()
     {
-        $listId = $this->param('list');
-        $email = $this->param('email');
+        $listId = $this->getParam('list');
+        $email = $this->getParam('email');
         if (!$listId || !$email) {
             $this->abort("ListId or subscriber email missing");
         }
@@ -188,8 +188,8 @@ class MailchimpShell extends Shell
 
     public function removeSubscriber()
     {
-        $listId = $this->param('list');
-        $email = $this->param('email');
+        $listId = $this->getParam('list');
+        $email = $this->getParam('email');
         if (!$listId || !$email) {
             $this->abort("ListId or subscriber email missing");
         }

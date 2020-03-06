@@ -2,8 +2,8 @@
 
 use Cake\Log\Log;
 
-if (!Log::config('mailchimp')) {
-    Log::config('mailchimp', [
+if (!Log::getConfig('mailchimp')) {
+    Log::setConfig('mailchimp', [
         'className' => 'Cake\Log\Engine\FileLog',
         'path' => LOGS,
         'file' => 'mailchimp',
