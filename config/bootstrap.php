@@ -8,6 +8,6 @@ if (!Log::getConfig('mailchimp')) {
         'path' => LOGS,
         'file' => 'mailchimp',
         //'levels' => ['notice', 'info', 'debug'],
-        'scopes' => ['mailchimp']
+        'scopes' => ['mailchimp'],
     ]);
 }

@@ -23,7 +23,6 @@ class WebhookController extends Controller
         } catch (\Exception $ex) {
             $success = false;
             $error = $ex->getMessage();
-
         } finally {
             $request = [
                 'data' => $this->request->getData(),

@@ -6,7 +6,8 @@ class MailchimpException extends \Exception
 {
     protected $_result;
 
-    public function __construct($message = "", $result = null) {
+    public function __construct($message = "", $result = null)
+    {
 
         $code = 0;
         if (is_array($result)) {

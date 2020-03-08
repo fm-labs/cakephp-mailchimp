@@ -23,65 +23,66 @@ class MailchimpShell extends Shell
                 throw new \RuntimeException('Mailchimp configuration not found');
             }
             $this->Mailchimp = new MailchimpApiClient($mailchimpConfig);
-        } catch(\Exception $ex) {
+        } catch (\Exception $ex) {
             $this->abort($ex->getMessage());
         }
     }
 
-    protected function _welcome(){}
+    protected function _welcome()
+    {
+    }
 
     public function getOptionParser()
     {
         return parent::getOptionParser()
             ->addSubcommand('lists', [
-                'help' => 'List all mailchimp lists'
+                'help' => 'List all mailchimp lists',
             ])
             ->addSubcommand('subscribers', [
-                'help' => 'List all subscribers for a list'
+                'help' => 'List all subscribers for a list',
             ])
             ->addSubcommand('getSubscriber', [
-                'help' => 'Add subscriber to list'
+                'help' => 'Add subscriber to list',
             ])
             ->addSubcommand('subscribe', [
-                'help' => 'Add subscriber to list'
+                'help' => 'Add subscriber to list',
             ])
             ->addSubcommand('unsubscribe', [
-                'help' => 'Unsubscribe subscriber to list'
+                'help' => 'Unsubscribe subscriber to list',
             ])
             ->addSubcommand('removeSubscriber', [
-                'help' => 'Remove subscriber from list'
+                'help' => 'Remove subscriber from list',
             ])
             ->addOption('list', [
                 'help' => 'Mailchimp list ID',
                 'required' => false,
-                'default' => null
+                'default' => null,
             ])
             ->addOption('email', [
                 'help' => 'Subscriber email',
                 'required' => false,
-                'default' => 'flohax@yahoo.de' //@TODO Remove this debug default value
+                'default' => 'flohax@yahoo.de', //@TODO Remove this debug default value
             ])
             ->addOption('name', [
                 'help' => 'Subscriber name',
                 'required' => false,
-                'default' => 'Test Subscriber' //@TODO Remove this debug default value
+                'default' => 'Test Subscriber', //@TODO Remove this debug default value
             ])
             ->addOption('status', [
                 'help' => 'Subscriber status',
                 'required' => false,
-                'default' => 'subscribed' //@TODO Remove this debug default value
+                'default' => 'subscribed', //@TODO Remove this debug default value
             ])
             ->addOption('limit', [
                 'help' => 'Number of maximum response items',
                 'required' => false,
-                'default' => 10
+                'default' => 10,
             ])
             ->addOption('offset', [
                 'help' => 'Number of maximum response items',
                 'required' => false,
-                'default' => 0
-            ])
-            ;
+                'default' => 0,
+            ]);
     }
 
     public function lists()
@@ -110,7 +111,7 @@ class MailchimpShell extends Shell
         $this->info("Requesting subscribers for list " . $listId);
         $subscribers = $this->Mailchimp->getMembers($listId, [
             'count' => $limit,
-            'offset' => $offset
+            'offset' => $offset,
         ]);
         if (!$subscribers || !isset($subscribers['members'])) {
             $this->abort("Failed to fetch subscribers");
@@ -135,10 +136,10 @@ class MailchimpShell extends Shell
         try {
             $result = $this->Mailchimp->getSubscriber($email, $listId);
             debug($result);
-        } catch(\Mailchimp\Mailchimp\MailchimpException $ex)  {
+        } catch (\Mailchimp\Mailchimp\MailchimpException $ex) {
             $this->err('[' . $ex->getCode() . '] ' . $ex->getMessage());
             debug($ex->getResult());
-        } catch(\Exception $ex) {
+        } catch (\Exception $ex) {
             $this->err($ex->getMessage());
         }
     }
@@ -155,14 +156,14 @@ class MailchimpShell extends Shell
         try {
             $result = $this->Mailchimp->addSubscriber($email, $listId, [
                 'merge_fields' => [
-                    'FNAME' => $this->getParam('name')
-                ]
+                    'FNAME' => $this->getParam('name'),
+                ],
             ]);
             debug($result);
-        } catch(\Mailchimp\Mailchimp\MailchimpException $ex)  {
+        } catch (\Mailchimp\Mailchimp\MailchimpException $ex) {
             $this->err('[' . $ex->getCode() . '] ' . $ex->getMessage());
             debug($ex->getResult());
-        } catch(\Exception $ex) {
+        } catch (\Exception $ex) {
             $this->err($ex->getMessage());
         }
     }
@@ -179,9 +180,9 @@ class MailchimpShell extends Shell
         try {
             $result = $this->Mailchimp->unsubscribeSubscriber($email, $listId);
             debug($result);
-        } catch(\Mailchimp\Mailchimp\MailchimpException $ex)  {
+        } catch (\Mailchimp\Mailchimp\MailchimpException $ex) {
             $this->err('[' . $ex->getCode() . '] ' . $ex->getMessage());
-        } catch(\Exception $ex) {
+        } catch (\Exception $ex) {
             $this->err($ex->getMessage());
         }
     }
@@ -198,9 +199,9 @@ class MailchimpShell extends Shell
         try {
             $result = $this->Mailchimp->removeSubscriber($email, $listId);
             debug($result);
-        } catch(\Mailchimp\Mailchimp\MailchimpException $ex)  {
+        } catch (\Mailchimp\Mailchimp\MailchimpException $ex) {
             $this->err('[' . $ex->getCode() . '] ' . $ex->getMessage());
-        } catch(\Exception $ex) {
+        } catch (\Exception $ex) {
             $this->err($ex->getMessage());
         }
     }

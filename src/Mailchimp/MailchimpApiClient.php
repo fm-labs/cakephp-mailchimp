@@ -17,8 +17,8 @@ use Cake\Log\Log;
  * @method delete($method, $args = array(), $timeout = null)
  * @method getLastError()
  */
-class MailchimpApiClient {
-
+class MailchimpApiClient
+{
     use InstanceConfigTrait;
 
     const MEMBER_STATUS_SUBSCRIBED      = 'subscribed';
@@ -32,7 +32,7 @@ class MailchimpApiClient {
     protected $_defaultConfig = [
         'api_key' => null,
         'throw_exceptions' => true,
-        'list_id' => null
+        'list_id' => null,
     ];
 
     /**
