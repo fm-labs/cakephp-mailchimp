@@ -13,7 +13,7 @@ class MailchimpShell extends Shell
      */
     public $Mailchimp;
 
-    public function initialize()
+    public function initialize(): void
     {
         parent::initialize();
 

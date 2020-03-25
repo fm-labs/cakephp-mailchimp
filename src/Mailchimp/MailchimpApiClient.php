@@ -10,11 +10,11 @@ use Cake\Log\Log;
  *
  * @link http://developer.mailchimp.com/documentation/mailchimp/
  *
- * @method get($method, $args = array(), $timeout = null)
- * @method post($method, $args = array(), $timeout = null)
- * @method put($method, $args = array(), $timeout = null)
- * @method patch($method, $args = array(), $timeout = null)
- * @method delete($method, $args = array(), $timeout = null)
+ * @method get($method, $args = [], $timeout = null)
+ * @method post($method, $args = [], $timeout = null)
+ * @method put($method, $args = [], $timeout = null)
+ * @method patch($method, $args = [], $timeout = null)
+ * @method delete($method, $args = [], $timeout = null)
  * @method getLastError()
  */
 class MailchimpApiClient
@@ -136,10 +136,9 @@ class MailchimpApiClient
     /*
     public function makeRequest()
     {
-
+    
     }
     */
-
     /**
      * Check the listId we are working on.
      * If listId === null, then use the default list.
