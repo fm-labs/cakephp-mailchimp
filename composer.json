@@ -3,8 +3,8 @@
     "description": "Mailchimp plugin for CakePHP",
     "type": "cakephp-plugin",
     "require": {
-        "php": ">=7.0",
-        "cakephp/cakephp": "~3.3",
+        "php": ">=7.2",
+        "cakephp/cakephp": "^4.0",
         "drewm/mailchimp-api": "^2.5"
     },
     "require-dev": {
