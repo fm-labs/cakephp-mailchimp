@@ -2,6 +2,7 @@
 
 namespace Mailchimp\Shell;
 
+use Cake\Console\ConsoleOptionParser;
 use Cake\Console\Shell;
 use Cake\Core\Configure;
 use Mailchimp\Mailchimp\MailchimpApiClient;
@@ -28,11 +29,7 @@ class MailchimpShell extends Shell
         }
     }
 
-    protected function _welcome()
-    {
-    }
-
-    public function getOptionParser()
+    public function getOptionParser(): ConsoleOptionParser
     {
         return parent::getOptionParser()
             ->addSubcommand('lists', [
