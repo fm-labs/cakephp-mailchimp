@@ -1,9 +1,10 @@
 <?php
-use Cake\Routing\RouteBuilder;
-use Cake\Routing\Router;
-use Cake\Routing\Route\DashedRoute;
 
-Router::plugin(
+use Cake\Routing\Route\DashedRoute;
+use Cake\Routing\RouteBuilder;
+
+/** @var \Cake\Routing\RouteBuilder $routes */
+$routes->plugin(
     'Mailchimp',
     ['path' => '/mailchimp'],
     function (RouteBuilder $routes) {
